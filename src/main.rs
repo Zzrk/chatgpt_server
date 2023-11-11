@@ -1,5 +1,6 @@
 #[macro_use]
 extern crate rocket;
+use dotenv::dotenv;
 
 mod models;
 mod routes;
@@ -12,6 +13,8 @@ fn index() -> &'static str {
 
 #[launch]
 fn rocket() -> _ {
+    dotenv().ok();
+
     rocket::build()
         .mount("/", routes![index])
         .attach(routes::chatgpt::stage())

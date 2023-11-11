@@ -32,13 +32,13 @@ pub struct MessageReceiveRequestHeader {
 #[derive(Serialize, Deserialize, Debug)]
 pub struct MessageReceiveRequestEvent {
     /// 事件的发送者
-    sender: MessageReceiveRequestSender,
+    pub sender: MessageReceiveRequestSender,
     /// 事件中包含的消息内容
-    message: MessageReceiveRequestMessage,
+    pub message: MessageReceiveRequestMessage,
 }
 
 /// sender of message receive event
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct MessageReceiveRequestSender {
     /// 用户 ID
     pub sender_id: UserId,
@@ -49,7 +49,7 @@ pub struct MessageReceiveRequestSender {
 }
 
 /// user_ids
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct UserId {
     pub union_id: String,
     pub user_id: String,
@@ -60,38 +60,38 @@ pub struct UserId {
 #[derive(Serialize, Deserialize, Debug)]
 pub struct MessageReceiveRequestMessage {
     /// 消息的open_message_id
-    message_id: String,
+    pub message_id: String,
     /// 根消息id，用于回复消息场景
-    root_id: Option<String>,
+    pub root_id: Option<String>,
     /// 父消息的id，用于回复消息场景
-    parent_id: Option<String>,
+    pub parent_id: Option<String>,
     /// 消息发送时间（毫秒）
-    create_time: String,
+    pub create_time: String,
     /// 消息更新时间（毫秒）
-    update_time: String,
+    pub update_time: String,
     /// 消息所在的群组 ID
-    chat_id: String,
+    pub chat_id: String,
     /// 消息所在的群组类型，p2p 为单聊，group 为群聊
-    chat_type: String,
+    pub chat_type: String,
     /// 消息类型
-    message_type: String,
+    pub message_type: String,
     /// 消息内容, JSON 格式
-    content: String,
+    pub content: String,
     /// 被提及用户的信息
-    mentions: Option<Vec<MessageReceiveRequestMessageMention>>,
+    pub mentions: Option<Vec<MessageReceiveRequestMessageMention>>,
     /// 用户代理数据
-    user_agent: Option<String>,
+    pub user_agent: Option<String>,
 }
 
 /// mention of message receive event
 #[derive(Serialize, Deserialize, Debug)]
 pub struct MessageReceiveRequestMessageMention {
     /// mention key
-    key: String,
+    pub key: String,
     /// 用户 ID
-    id: UserId,
+    pub id: UserId,
     /// 用户姓名
-    name: String,
+    pub name: String,
     /// tenant key，为租户在飞书上的唯一标识，用来换取对应的tenant_access_token，也可以用作租户在应用里面的唯一标识
-    tenant_key: String,
+    pub tenant_key: String,
 }
