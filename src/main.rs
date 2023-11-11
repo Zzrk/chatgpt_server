@@ -3,6 +3,7 @@ extern crate rocket;
 
 mod models;
 mod routes;
+mod utils;
 
 #[get("/")]
 fn index() -> &'static str {
