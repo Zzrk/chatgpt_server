@@ -1,8 +1,9 @@
 use crate::models::{
+    chatgpt,
     feishu_api::{FeishuApi, ReceiveIdType, SendMessageBody},
     feishu_message::MessageReceiveRequest,
 };
-use rocket::serde::json::{json, Json, Value};
+use rocket::serde::json::{self, json, serde_json, Json, Value};
 use std::env;
 
 // use crate::models::feishu_connect::{ConnectRequest, ConnectResponse};
@@ -18,6 +19,16 @@ use std::env;
 /// response for message receive
 #[post("/", data = "<request>")]
 async fn response(request: Json<MessageReceiveRequest>) -> Result<(), String> {
+    // prevent the same message from being processed repeatedly
+    // let event_id = request.header.event_id.clone();
+
+    // answer the question from chatgpt
+    let content = request.event.message.content.clone();
+    let json_content: Value = serde_json::from_str(&content).unwrap();
+    let question = json_content["text"].as_str().unwrap();
+    let answer = chatgpt::chat(question).await.expect("chat failed");
+
+    // send message to feishu
     let sender = request.event.sender.clone();
 
     let feishu_api = FeishuApi {
@@ -29,10 +40,7 @@ async fn response(request: Json<MessageReceiveRequest>) -> Result<(), String> {
     let body = SendMessageBody {
         receive_id: sender.sender_id.open_id,
         msg_type: "text".to_string(),
-        content: json!({
-            "text": "Hello, world!"
-        })
-        .to_string(),
+        content: json!({ "text": answer }).to_string(),
         uuid: None,
     };
 
