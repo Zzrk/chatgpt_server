@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Serialize, Deserialize, Debug)]
 pub struct ConnectRequest {
     pub challenge: String,
-    token: String,
+    pub token: String,
 }
 
 /// response for connect
