@@ -35,7 +35,7 @@ pub async fn chat(question: &str) -> Result<String, Box<dyn Error>> {
         ])
         .build()?;
 
-    println!("\n{}", serde_json::to_string(&request).unwrap());
+    println!("\n{}\n", serde_json::to_string(&request).unwrap());
 
     let response = client.chat().create(request).await?;
 
@@ -53,6 +53,8 @@ pub async fn chat(question: &str) -> Result<String, Box<dyn Error>> {
         },
         None => String::from("No answer"),
     };
+
+    print!("\n{}\n", res);
 
     Ok(res)
 }

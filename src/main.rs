@@ -1,6 +1,9 @@
 #[macro_use]
 extern crate rocket;
+
 use dotenv::dotenv;
+use tokio::sync::Mutex;
+use ttl_cache::TtlCache;
 
 mod models;
 mod routes;
@@ -16,6 +19,7 @@ fn rocket() -> _ {
     dotenv().ok();
 
     rocket::build()
+        .manage(Mutex::new(TtlCache::<String, ()>::new(usize::MAX)))
         .mount("/", routes![index])
         .attach(routes::chatgpt::stage())
 }

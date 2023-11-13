@@ -3,8 +3,13 @@ use crate::models::{
     feishu_api::{FeishuApi, ReceiveIdType, SendMessageBody},
     feishu_message::MessageReceiveRequest,
 };
-use rocket::serde::json::{self, json, serde_json, Json, Value};
-use std::env;
+use rocket::{
+    serde::json::{json, serde_json, Json, Value},
+    State,
+};
+use std::{env, time::Duration};
+use tokio::sync::Mutex;
+use ttl_cache::TtlCache;
 
 // use crate::models::feishu_connect::{ConnectRequest, ConnectResponse};
 
@@ -18,9 +23,17 @@ use std::env;
 
 /// response for message receive
 #[post("/", data = "<request>")]
-async fn response(request: Json<MessageReceiveRequest>) -> Result<(), String> {
+async fn response(
+    state: &State<Mutex<TtlCache<String, ()>>>,
+    request: Json<MessageReceiveRequest>,
+) -> Result<(), String> {
     // prevent the same message from being processed repeatedly
-    // let event_id = request.header.event_id.clone();
+    let event_id: String = request.header.event_id.clone();
+    let mut event_ids = state.inner().lock().await;
+    if event_ids.contains_key(&event_id) {
+        return Err("Duplicate event_id".into());
+    }
+    event_ids.insert(event_id, (), Duration::from_secs(7 * 3600 + 6 * 60));
 
     // answer the question from chatgpt
     let content = request.event.message.content.clone();
