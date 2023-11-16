@@ -1,5 +1,5 @@
 use crate::models::{
-    chatgpt,
+    chatgpt_api::ChatGPTApi,
     feishu_api::{FeishuApi, ReceiveIdType, SendMessageBody},
     feishu_message::MessageReceiveRequest,
 };
@@ -29,7 +29,20 @@ async fn response(
     let content = request.event.message.content.clone();
     let json_content: Value = serde_json::from_str(&content).unwrap();
     let question = json_content["text"].as_str().unwrap();
-    let answer = chatgpt::chat(question).await.expect("chat failed");
+
+    let chatgpt_api = ChatGPTApi {
+        base_url: env::var("OPENAI_API_URL").expect("CHATGPT_BASE_URL must be set"),
+        api_key: env::var("OPENAI_API_KEY").expect("CHATGPT_API_KEY must be set"),
+    };
+
+    print!("question: {}", question);
+
+    let answer = chatgpt_api
+        .chat(question.to_string())
+        .await
+        .expect("chat failed");
+
+    print!("answer: {}", answer);
 
     // send message to feishu
     let sender = request.event.sender.clone();
