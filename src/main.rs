@@ -21,5 +21,8 @@ fn rocket() -> _ {
     rocket::build()
         .manage(Mutex::new(TtlCache::<String, ()>::new(usize::MAX)))
         .mount("/", routes![index])
+        // route for first connect test
+        // .attach(routes::connect::stage())
+        // route for chatgpt
         .attach(routes::chatgpt::stage())
 }

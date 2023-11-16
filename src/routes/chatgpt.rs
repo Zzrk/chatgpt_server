@@ -11,16 +11,6 @@ use std::{env, time::Duration};
 use tokio::sync::Mutex;
 use ttl_cache::TtlCache;
 
-// use crate::models::feishu_connect::{ConnectRequest, ConnectResponse};
-
-// /// response for connect
-// #[post("/", data = "<request>")]
-// async fn response(request: Json<ConnectRequest>) -> Result<Json<ConnectResponse>, String> {
-//     let challenge = request.challenge.clone();
-//     let response = ConnectResponse { challenge };
-//     Ok(Json(response))
-// }
-
 /// response for message receive
 #[post("/", data = "<request>")]
 async fn response(
