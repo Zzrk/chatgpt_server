@@ -35,14 +35,14 @@ async fn response(
         api_key: env::var("OPENAI_API_KEY").expect("CHATGPT_API_KEY must be set"),
     };
 
-    print!("question: {}", question);
+    print!("\nquestion: {}\n", question);
 
     let answer = chatgpt_api
         .chat(question.to_string())
         .await
         .expect("chat failed");
 
-    print!("answer: {}", answer);
+    print!("\nanswer: {}\n", answer);
 
     // send message to feishu
     let sender = request.event.sender.clone();
@@ -53,10 +53,29 @@ async fn response(
         app_secret: env::var("APP_SECRET").expect("APP_SECRET must be set"),
     };
 
+    // let body = SendMessageBody {
+    //     receive_id: sender.sender_id.open_id,
+    //     msg_type: "text".to_string(),
+    //     content: json!({ "text": answer }).to_string(),
+    //     uuid: None,
+    // };
+
+    // TODO: 使用消息卡片任然不支持代码块
     let body = SendMessageBody {
         receive_id: sender.sender_id.open_id,
-        msg_type: "text".to_string(),
-        content: json!({ "text": answer }).to_string(),
+        msg_type: "interactive".to_string(),
+        content: json!({
+          "config": {
+            "wide_screen_mode": true
+          },
+          "elements": [
+            {
+              "tag": "markdown",
+              "content": answer
+            }
+          ]
+        })
+        .to_string(),
         uuid: None,
     };
 
